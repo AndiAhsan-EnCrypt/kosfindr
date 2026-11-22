@@ -1,0 +1,233 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <!-- Back Button -->
+  <a href="/kos" class="btn btn-outline-secondary btn-sm rounded-pill mb-4">
+    <i class="bi bi-arrow-left me-1"></i>Kembali
+  </a>
+
+  <div class="row g-4">
+    <!-- Left: Images & Info -->
+    <div class="col-lg-8">
+      <!-- Images -->
+      <div class="card border-0 shadow-sm mb-4">
+        <% if (kos.images && kos.images.length > 0 && kos.images[0] !== '') { %>
+          <div id="kosCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <% kos.images.forEach((img, index) => { %>
+                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                  <img src="/uploads/kos/<%= img %>" class="d-block w-100" alt="<%= kos.name %>"
+                       style="height: 400px; object-fit: cover;">
+                </div>
+              <% }) %>
+            </div>
+            <% if (kos.images.length > 1) { %>
+              <button class="carousel-control-prev" type="button" data-bs-target="#kosCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#kosCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </button>
+            <% } %>
+          </div>
+        <% } else { %>
+          <div class="d-flex align-items-center justify-content-center"
+               style="height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="bi bi-house-fill display-1 text-white opacity-50"></i>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Description -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>Deskripsi</h4>
+          <p class="text-muted"><%= kos.description || 'Belum ada deskripsi.' %></p>
+        </div>
+      </div>
+
+      <!-- Facilities -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-3"><i class="bi bi-check2-circle me-2 text-success"></i>Fasilitas</h4>
+          <div class="row g-2">
+            <% if (kos.facilities && kos.facilities.length > 0) { %>
+              <% kos.facilities.forEach(f => { %>
+                <div class="col-auto">
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2">
+                    <i class="bi bi-check me-1"></i><%= f %>
+                  </span>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <p class="text-muted">Belum ada info fasilitas.</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rules -->
+      <% if (kos.rules) { %>
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h4 class="fw-bold mb-3"><i class="bi bi-exclamation-triangle me-2 text-warning"></i>Peraturan Kos</h4>
+            <p class="text-muted"><%= kos.rules %></p>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Reviews -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-3">
+            <i class="bi bi-chat-quote me-2 text-warning"></i>Review
+            <span class="badge bg-primary rounded-pill ms-2"><%= reviews.length %></span>
+          </h4>
+
+          <!-- Add Review Form -->
+          <% if (user && user.role === 'mahasiswa' && !userReview) { %>
+            <div class="card bg-light border-0 mb-4">
+              <div class="card-body">
+                <h6 class="fw-bold mb-3">Tulis Review</h6>
+                <form action="/review/<%= kos.id %>" method="POST">
+                  <div class="mb-3">
+                    <label class="form-label fw-semibold">Rating</label>
+                    <div class="star-rating">
+                      <% for(let i = 5; i >= 1; i--) { %>
+                        <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>" required>
+                        <label for="star<%= i %>"><i class="bi bi-star-fill"></i></label>
+                      <% } %>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="comment" class="form-label fw-semibold">Komentar</label>
+                    <textarea class="form-control" id="comment" name="comment" rows="3" 
+                              placeholder="Ceritakan pengalamanmu tinggal di kos ini..."></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-send me-1"></i>Kirim Review
+                  </button>
+                </form>
+              </div>
+            </div>
+          <% } else if (!user) { %>
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-1"></i>
+              <a href="/login" class="fw-semibold">Login</a> untuk memberikan review.
+            </div>
+          <% } %>
+
+          <!-- Review List -->
+          <% if (reviews.length === 0) { %>
+            <p class="text-muted text-center py-3">Belum ada review. Jadilah yang pertama!</p>
+          <% } else { %>
+            <% reviews.forEach(review => { %>
+              <div class="d-flex mb-3 pb-3 border-bottom">
+                <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(review.user_name) %>&background=4361ee&color=fff&size=40"
+                     class="rounded-circle me-3" alt="" style="width: 40px; height: 40px;">
+                <div class="flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <strong><%= review.user_name %></strong>
+                      <div class="text-warning small">
+                        <% for(let i = 1; i <= 5; i++) { %>
+                          <i class="bi bi-star<%= i <= review.rating ? '-fill' : '' %>"></i>
+                        <% } %>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <small class="text-muted"><%= new Date(review.created_at).toLocaleDateString('id-ID') %></small>
+                      <% if (user && (user.id === review.user_id || user.role === 'admin')) { %>
+                        <form action="/review/<%= review.id %>?_method=DELETE" method="POST" class="d-inline"
+                              onsubmit="return confirm('Hapus review ini?')">
+                          <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
+                      <% } %>
+                    </div>
+                  </div>
+                  <p class="text-muted mt-1 mb-0"><%= review.comment %></p>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Sidebar -->
+    <div class="col-lg-4">
+      <!-- Price Card -->
+      <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 80px;">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h3 class="fw-bold mb-1"><%= kos.name %></h3>
+              <span class="badge bg-<%= kos.type === 'putra' ? 'primary' : kos.type === 'putri' ? 'danger' : 'success' %> rounded-pill">
+                <i class="bi bi-<%= kos.type === 'putra' ? 'gender-male' : kos.type === 'putri' ? 'gender-female' : 'people' %> me-1"></i>
+                Kos <%= kos.type.charAt(0).toUpperCase() + kos.type.slice(1) %>
+              </span>
+            </div>
+            <% if (user) { %>
+              <form action="/kos/<%= kos.id %>/favorite" method="POST">
+                <button type="submit" class="btn btn-outline-danger rounded-circle" title="Favorit">
+                  <i class="bi bi-heart<%= isFavorited ? '-fill' : '' %>"></i>
+                </button>
+              </form>
+            <% } %>
+          </div>
+
+          <div class="bg-primary bg-opacity-10 rounded-3 p-3 text-center mb-3">
+            <small class="text-muted">Harga per bulan</small>
+            <h2 class="fw-bold text-primary mb-0">Rp <%= Number(kos.price_monthly).toLocaleString('id-ID') %></h2>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-geo-alt text-danger me-2"></i>
+              <span><%= kos.address %>, <%= kos.city %></span>
+            </div>
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-door-open text-success me-2"></i>
+              <span><%= kos.rooms_available %> kamar tersedia</span>
+            </div>
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-star-fill text-warning me-2"></i>
+              <span><%= kos.avg_rating %> / 5 (<%= kos.total_reviews %> review)</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- Owner Info -->
+          <h6 class="fw-bold mb-3"><i class="bi bi-person-circle me-1"></i>Pemilik Kos</h6>
+          <div class="d-flex align-items-center mb-3">
+            <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(kos.owner_name) %>&background=4361ee&color=fff&size=45"
+                 class="rounded-circle me-3" alt="" style="width: 45px; height: 45px;">
+            <div>
+              <strong><%= kos.owner_name %></strong>
+              <% if (kos.owner_phone) { %>
+                <div class="small text-muted"><i class="bi bi-phone me-1"></i><%= kos.owner_phone %></div>
+              <% } %>
+            </div>
+          </div>
+
+          <% if (kos.owner_phone) { %>
+            <a href="https://wa.me/62<%= kos.owner_phone.replace(/^0/, '') %>" target="_blank"
+               class="btn btn-success w-100 rounded-pill fw-semibold mb-2">
+              <i class="bi bi-whatsapp me-1"></i>Hubungi via WhatsApp
+            </a>
+          <% } %>
+          <% if (kos.owner_email) { %>
+            <a href="mailto:<%= kos.owner_email %>" class="btn btn-outline-primary w-100 rounded-pill fw-semibold">
+              <i class="bi bi-envelope me-1"></i>Kirim Email
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,78 @@
+<%- include('partials/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card border-0 shadow-lg">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold"><i class="bi bi-person-circle me-2 text-primary"></i>Profil Saya</h3>
+          </div>
+
+          <form action="/profile" method="POST" enctype="multipart/form-data">
+            <div class="text-center mb-4">
+              <img src="/uploads/avatars/<%= profileUser.avatar %>" alt="Avatar" 
+                   class="rounded-circle mb-3 border border-3 border-primary"
+                   style="width: 100px; height: 100px; object-fit: cover;"
+                   onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profileUser.name) %>&background=4361ee&color=fff&size=100'">
+              <div>
+                <label for="avatar" class="btn btn-outline-primary btn-sm rounded-pill">
+                  <i class="bi bi-camera me-1"></i>Ganti Foto
+                </label>
+                <input type="file" id="avatar" name="avatar" class="d-none" accept="image/*">
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label fw-semibold">Nama Lengkap</label>
+                <input type="text" class="form-control" id="name" name="name" value="<%= profileUser.name %>" required>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label fw-semibold">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= profileUser.email %>" required>
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label fw-semibold">No. Telepon</label>
+                <input type="tel" class="form-control" id="phone" name="phone" value="<%= profileUser.phone || '' %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Role</label>
+                <input type="text" class="form-control bg-light" value="<%= profileUser.role %>" disabled>
+              </div>
+              <div class="col-12"><hr></div>
+              <div class="col-md-6">
+                <label for="password" class="form-label fw-semibold">Password Baru <small class="text-muted">(kosongkan jika tidak ingin ubah)</small></label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password baru">
+              </div>
+              <div class="col-md-6">
+                <label for="password_confirm" class="form-label fw-semibold">Konfirmasi Password</label>
+                <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Ulangi password baru">
+              </div>
+            </div>
+
+            <div class="text-end mt-4">
+              <button type="submit" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-check-circle me-1"></i>Simpan Perubahan
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('avatar').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        document.querySelector('img[alt="Avatar"]').src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+<%- include('partials/footer') %>

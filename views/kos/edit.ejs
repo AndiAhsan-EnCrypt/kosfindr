@@ -1,0 +1,115 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-lg">
+        <div class="card-body p-5">
+          <h3 class="fw-bold mb-4"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Kos</h3>
+
+          <form action="/kos/<%= kos.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+            <div class="row g-3">
+              <div class="col-12">
+                <label for="name" class="form-label fw-semibold">Nama Kos *</label>
+                <input type="text" class="form-control form-control-lg" id="name" name="name"
+                       value="<%= kos.name %>" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="city" class="form-label fw-semibold">Kota *</label>
+                <input type="text" class="form-control" id="city" name="city"
+                       value="<%= kos.city %>" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="address" class="form-label fw-semibold">Alamat Lengkap *</label>
+                <input type="text" class="form-control" id="address" name="address"
+                       value="<%= kos.address %>" required>
+              </div>
+
+              <div class="col-md-4">
+                <label for="price_monthly" class="form-label fw-semibold">Harga / Bulan (Rp) *</label>
+                <input type="number" class="form-control" id="price_monthly" name="price_monthly"
+                       value="<%= kos.price_monthly %>" required min="0">
+              </div>
+
+              <div class="col-md-4">
+                <label for="type" class="form-label fw-semibold">Tipe Kos *</label>
+                <select class="form-select" id="type" name="type" required>
+                  <option value="putra" <%= kos.type === 'putra' ? 'selected' : '' %>>Putra</option>
+                  <option value="putri" <%= kos.type === 'putri' ? 'selected' : '' %>>Putri</option>
+                  <option value="campur" <%= kos.type === 'campur' ? 'selected' : '' %>>Campur</option>
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label for="rooms_available" class="form-label fw-semibold">Kamar Tersedia</label>
+                <input type="number" class="form-control" id="rooms_available" name="rooms_available"
+                       value="<%= kos.rooms_available %>" min="0">
+              </div>
+
+              <div class="col-md-4">
+                <label for="status" class="form-label fw-semibold">Status</label>
+                <select class="form-select" id="status" name="status">
+                  <option value="active" <%= kos.status === 'active' ? 'selected' : '' %>>Aktif</option>
+                  <option value="inactive" <%= kos.status === 'inactive' ? 'selected' : '' %>>Nonaktif</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label for="description" class="form-label fw-semibold">Deskripsi</label>
+                <textarea class="form-control" id="description" name="description" rows="4"><%= kos.description || '' %></textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Fasilitas</label>
+                <div class="row g-2">
+                  <% const facilityOptions = ['WiFi', 'AC', 'Kamar Mandi Dalam', 'Kamar Mandi Luar', 'Parkir Motor', 'Parkir Mobil', 'Dapur Bersama', 'Laundry', 'TV', 'Kulkas', 'CCTV', 'Cleaning Service', 'Ruang Tamu', 'Listrik Token']; %>
+                  <% facilityOptions.forEach(f => { %>
+                    <div class="col-6 col-md-3">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="facilities" value="<%= f %>"
+                               id="fac-<%= f.replace(/\s/g, '') %>"
+                               <%= kos.facilities && kos.facilities.includes(f) ? 'checked' : '' %>>
+                        <label class="form-check-label small" for="fac-<%= f.replace(/\s/g, '') %>"><%= f %></label>
+                      </div>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label for="rules" class="form-label fw-semibold">Peraturan Kos</label>
+                <textarea class="form-control" id="rules" name="rules" rows="3"><%= kos.rules || '' %></textarea>
+              </div>
+
+              <div class="col-12">
+                <label for="images" class="form-label fw-semibold">
+                  <i class="bi bi-camera me-1"></i>Ganti Foto Kos (opsional)
+                </label>
+                <input type="file" class="form-control" id="images" name="images" accept="image/*" multiple>
+                <% if (kos.images && kos.images.length > 0) { %>
+                  <small class="text-muted">Foto saat ini: <%= kos.images.length %> foto. Upload baru akan menggantikan foto lama.</small>
+                <% } %>
+              </div>
+
+              <div class="col-12">
+                <hr>
+                <div class="d-flex justify-content-between">
+                  <a href="/kos/my-listings" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-1"></i>Batal
+                  </a>
+                  <button type="submit" class="btn btn-primary rounded-pill px-5">
+                    <i class="bi bi-check-circle me-1"></i>Simpan Perubahan
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
